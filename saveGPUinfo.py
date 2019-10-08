@@ -31,7 +31,7 @@ def saveInfo():
         info = gpu_monitor_server(serverList)
         with open('info.pkl', 'wb') as f:
             pickle.dump(info, f)
-        time.sleep(20)
+        time.sleep(60)
 
 if __name__ == '__main__':
     saveInfo()
