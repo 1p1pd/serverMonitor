@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <style>
+            * {
+                font-family: 'Lato', Verdana, Helvetica, sans-serif;
+                font-size: 20px;
+            }
+            h1 {
+                font-family: 'Lato', Verdana, Helvetica, sans-serif;
+                font-size: 32px;
+            }
+        </style>
+    </head>
+
+    <body>
+        {% for server in serverInfo %}
+        <h1>{{ server[0] }}</h1>
+        <ul>
+            {% for info in server[1] %}
+            <li>{{ info }}</li>
+            {% endfor %}
+        </ul>
+        {% endfor %}
+        {{ timestamp }}
+    </body>
+</html>
