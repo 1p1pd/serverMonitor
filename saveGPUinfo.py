@@ -32,3 +32,6 @@ def saveInfo():
         with open('info.pkl', 'wb') as f:
             pickle.dump(info, f)
         time.sleep(20)
+
+if __name__ == '__main__':
+    saveInfo()
