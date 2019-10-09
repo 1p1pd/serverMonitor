@@ -68,7 +68,7 @@ def get_server_info(server, client):
             used_mem = gpu_info['used_mem']
             total_mem = gpu_info['total_mem']
             gpu_util = gpu_info['gpu_util']
-            status = '{} out of {} used by {} (GPU usage: {})'.format(used_mem, total_mem,
+            status = '{} out of {} used by {} (GPU utilization: {})'.format(used_mem, total_mem,
                                     ', '.join(users), gpu_util)
 
         results.append('GPU {} ({}): {}'.format(gpu_info['idx'],
@@ -107,7 +107,7 @@ if __name__ == '__main__':
                'arabica.cs.washington.edu', 'chemex.cs.washington.edu',
                'lungo.cs.washington.edu',   'ristretto.cs.washington.edu']
     clients = start_connections(servers)
-    
+
     while True:
         info = gpu_monitor_server(servers, clients)
         with open('info.pkl', 'wb') as f:
