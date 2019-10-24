@@ -109,9 +109,12 @@ if __name__ == '__main__':
     clients = start_connections(servers)
 
     while True:
-        info = gpu_monitor_server(servers, clients)
-        with open('info.pkl', 'wb') as f:
-            pickle.dump(info, f)
+        try:
+            info = gpu_monitor_server(servers, clients)
+            with open('info.pkl', 'wb') as f:
+                pickle.dump(info, f)
+        except:
+            pass
         time.sleep(20)
 
     end_connections(clients)
