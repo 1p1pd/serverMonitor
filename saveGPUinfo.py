@@ -113,8 +113,8 @@ if __name__ == '__main__':
             info = gpu_monitor_server(servers, clients)
             with open('info.pkl', 'wb') as f:
                 pickle.dump(info, f)
-        except:
-            pass
+        except Exception as e:
+            print(e)
         time.sleep(20)
 
     end_connections(clients)
