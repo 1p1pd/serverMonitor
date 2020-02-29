@@ -13,11 +13,13 @@ def gpu_monitor_server():
     for server, status in results:
         for s in status:
             if 'used by' in s:
-                username = s.split('used by')[1].split('(')[0].strip()
-                try:
-                    user_count[username] += 1
-                except Exception as e:
-                    user_count[username] = 1
+                usernames = s.split('used by')[1].split('(')[0].strip()
+                usernames = usernames.split(', ')
+                for username in usernames:
+                    try:
+                        user_count[username] += 1
+                    except Exception as e:
+                        user_count[username] = 1
     user_count = [(k, v) for k, v in user_count.items()]
     user_count.sort(key=lambda i: i[1], reverse=True)
     timestamp = info['timestamp']
