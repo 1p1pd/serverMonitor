@@ -115,6 +115,8 @@ if __name__ == '__main__':
                 pickle.dump(info, f)
         except Exception as e:
             print(e)
+            end_connections(clients)
+            clients = start_connections(servers)
         time.sleep(20)
 
     end_connections(clients)
