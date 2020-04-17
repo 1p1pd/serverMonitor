@@ -105,7 +105,9 @@ def gpu_monitor_server(servers, clients):
 if __name__ == '__main__':
     servers = ['nescafe.cs.washington.edu', 'sanka.cs.washington.edu',
                'arabica.cs.washington.edu', 'chemex.cs.washington.edu',
-               'lungo.cs.washington.edu',   'ristretto.cs.washington.edu']
+               'lungo.cs.washington.edu',   'ristretto.cs.washington.edu',
+               'latte.cs.washington.edu',   'sidamo.cs.washington.edu',
+               'caffeine.cs.washington.edu','cortado.cs.washington.edu']
     clients = start_connections(servers)
 
     while True:
