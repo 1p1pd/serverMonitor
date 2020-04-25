@@ -44,7 +44,14 @@ def gpu_monitor_server():
                 user_count[username][2] += ['{} * {}'.format(servername, n_gpu)]
 
     user_count = [(k, n, u, ', '.join(v)) for k, [n, u, v] in user_count.items()]
-    user_count.sort(key=lambda i: i[1], reverse=True)
+
+    user_red = [i for i in user_count if (i[1] > 8)]
+    user_yellow = [i for i in user_count if (i[1] <= 8 and i[1] > 4)]
+    user_rest = [i for i in user_count if (i[1] <= 4)]
+    user_red.sort(key=lambda i: i[1], reverse=True)
+    user_yellow.sort(key=lambda i: i[1], reverse=True)
+    user_rest.sort(key=lambda i: i[1], reverse=True)
+    user_count = [user_red, user_yellow, user_rest]
 
     timestamp = info['timestamp']
     return render_template('files.html', userCount=user_count, serverInfo=results, timestamp=timestamp)

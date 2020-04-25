@@ -9,13 +9,39 @@
                 font-family: 'Lato', Verdana, Helvetica, sans-serif;
                 font-size: 32px;
             }
+            yellow {
+                color: #ffbf00;
+                font-family: 'Lato', Verdana, Helvetica, sans-serif;
+                font-size: 20px;
+            }
+            red {
+                color: #ff0000;
+                font-family: 'Lato', Verdana, Helvetica, sans-serif;
+                font-size: 20px;
+            }
         </style>
     </head>
 
     <body>
         <h1>GRAIL Leaderboard</h1>
         <table>
-            {% for user in userCount %}
+            {% for user in userCount[0] %}
+            <tr>
+                <td>{{ user[0] }}</td>
+                <td> : <red>{{ user[1] }} GPUs</red></td>
+                <td>&nbsp&nbsp({{ user[2] }} </td>
+                <td> : {{ user[3] }})</td>
+            </tr>
+            {% endfor %}
+            {% for user in userCount[1] %}
+            <tr>
+                <td>{{ user[0] }}</td>
+                <td> : <yellow>{{ user[1] }} GPUs</yellow></td>
+                <td>&nbsp&nbsp({{ user[2] }} </td>
+                <td> : {{ user[3] }})</td>
+            </tr>
+            {% endfor %}
+            {% for user in userCount[2] %}
             <tr>
                 <td>{{ user[0] }}</td>
                 <td> : {{ user[1] }} GPUs</td>
