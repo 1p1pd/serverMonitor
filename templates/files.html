@@ -50,6 +50,14 @@
             </tr>
             {% endfor %}
         </table>
+
+        {% if conflicts[0] %}
+        <h1>Possible Conflicts</h1>
+        {% for conflict in conflicts[1] %}
+        <li><red>{{ conflict }}</red></li>
+        {% endfor %}
+        {% endif %}
+
         {% for server in serverInfo %}
         <h1>{{ server[0] }}</h1>
         <ul>
@@ -58,6 +66,7 @@
             {% endfor %}
         </ul>
         {% endfor %}
-        {{ timestamp }}
+
+        Last updated: {{ timestamp }}
     </body>
 </html>

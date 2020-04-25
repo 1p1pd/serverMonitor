@@ -12,6 +12,8 @@ def gpu_monitor_server():
     users = []
     user_server = {}
     user_util = {}
+    is_conflict = False
+    conflicts = []
     for server, status in results:
         server = server.split('.')[0]
         for s in status:
@@ -19,6 +21,11 @@ def gpu_monitor_server():
                 usernames = s.split('used by')[1].split('(')[0].strip()
                 usernames = usernames.split(', ')
                 util = int(s.split('GPU utilization:')[1].split()[0])
+                if len(usernames) > 1:
+                    is_conflict = True
+                    conflict = ', '.join(usernames)
+                    conflict = '{} on {} GPU {}'.format(conflict, server, s.split()[1])
+                    conflicts.append(conflict)
                 for username in usernames:
                     try:
                         user_server[(username, server)] += 1
@@ -54,4 +61,7 @@ def gpu_monitor_server():
     user_count = [user_red, user_yellow, user_rest]
 
     timestamp = info['timestamp']
-    return render_template('files.html', userCount=user_count, serverInfo=results, timestamp=timestamp)
+    return render_template('files.html', userCount=user_count,
+                                         conflicts=(is_conflict, conflicts),
+                                         serverInfo=results,
+                                         timestamp=timestamp)
