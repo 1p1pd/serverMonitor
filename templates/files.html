@@ -16,7 +16,12 @@
         <h1>GRAIL Leaderboard</h1>
         <table>
             {% for user in userCount %}
-            <tr><td>{{ user[0] }}</td><td> : {{ user[1] }} GPUs</td></tr>
+            <tr>
+                <td>{{ user[0] }}</td>
+                <td> : {{ user[1] }} GPUs</td>
+                <td>&nbsp&nbsp&nbsp({{ user[2] }} </td>
+                <td>:&nbsp&nbsp&nbsp{{ user[3] }})</td>
+            </tr>
             {% endfor %}
         </table>
         {% for server in serverInfo %}
