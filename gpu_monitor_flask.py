@@ -8,6 +8,7 @@ def add_color(info):
     #                     '{:.2f}% utilization'.format(util),
     #                     []]
     k, n, u, v = info
+    k = Markup('<a href="{}">{}</a>'.format(k, k))
     if n > 8:
         n = Markup('<red>{} GPUs</red>'.format(n))
     elif n <= 8 and n > 4:
@@ -29,7 +30,7 @@ def gpu_monitor_server():
     with open('info.pkl', 'rb') as f:
         info = pickle.load(f)
 
-    results = info['serverInfo']
+    results = info['server_info']
     users = []
     user_server = {}
     user_util = {}
@@ -79,3 +80,19 @@ def gpu_monitor_server():
                                          conflicts=(is_conflict, conflicts),
                                          serverInfo=results,
                                          timestamp=timestamp)
+
+@app.route('/<username>')
+def get_user_info(username):
+    with open('info.pkl', 'rb') as f:
+        info = pickle.load(f)
+
+    results = []
+    user_info = [i for i in info['user_info'] if i[2] == username]
+    for server, gpu_id, _, program in user_info:
+        status = 'GPU {} on {}: {}'.format(gpu_id, server, program)
+        results.append(status)
+
+    timestamp = info['timestamp']
+    return render_template('user.html', username=username,
+                                        user_info=results,
+                                        timestamp=timestamp)

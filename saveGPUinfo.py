@@ -28,6 +28,14 @@ def get_users_by_pid(ps_output):
 
     return users_by_pid
 
+def get_program_by_pid(ps_output):
+    program_by_pid = {}
+    for line in ps_output.strip().split('\n'):
+        line = line.split()
+        program_by_pid[line[0]] = ' '.join(line[1:])
+
+    return program_by_pid
+
 def start_connections(server_list):
     clients = []
     for server in server_list:
@@ -52,13 +60,18 @@ def get_server_info(server, client):
 
     pids = [pid for gpu_info in gpu_infos for pid in gpu_info['pids']]
     if len(pids) > 0:
-        PS_CMD = 'ps -o pid= -o ruser= -p {pids}'.format(pids=','.join(pids))
+        PS_CMD = 'ps -o pid= -o ruser=  -p {pids}'.format(pids=','.join(pids))
         ps = run_cmd(client, PS_CMD)
         users_by_pid = get_users_by_pid(ps)
+        PS_CMD = 'ps -o pid= -o args=  -p {pids}'.format(pids=','.join(pids))
+        ps = run_cmd(client, PS_CMD)
+        program_by_pid = get_program_by_pid(ps)
     else:
         users_by_pid = {}
+        program_by_pid = {}
 
     results = []
+    details = []
     for gpu_info in gpu_infos:
         users = set((users_by_pid[pid] for pid in gpu_info['pids']))
 
@@ -70,29 +83,35 @@ def get_server_info(server, client):
             gpu_util = gpu_info['gpu_util']
             status = '{} out of {} used by {} (GPU utilization: {})'.format(used_mem, total_mem,
                                     ', '.join(users), gpu_util)
+            for pid in gpu_info['pids']:
+                user = users_by_pid[pid]
+                program = program_by_pid[pid]
+                details.append((server.split('.')[0], gpu_info['idx'], user, program))
 
         results.append('GPU {} ({}): {}'.format(gpu_info['idx'],
                                         gpu_info['model'],
                                         status))
-    return results
+    return results, details
 
 def get_servers_info(servers, clients):
     server_infos = {}
+    user_infos = []
     for i in range(len(servers)):
         server = servers[i]
         client = clients[i]
-        results = get_server_info(server, client)
+        results, details = get_server_info(server, client)
         server_infos[server] = results
-    return server_infos
+        user_infos += details
+    return server_infos, user_infos
 
 def gpu_monitor_server(servers, clients):
-    serverInfo = get_servers_info(servers, clients)
+    server_info, user_infos = get_servers_info(servers, clients)
 
     results = []
     for server in servers:
         tmp = [server]
         try:
-            tmp.append(serverInfo[server])
+            tmp.append(server_info[server])
         except:
             tmp.append(["This server is down! Keep calm and email Stephen."])
         results.append(tmp)
@@ -100,7 +119,9 @@ def gpu_monitor_server(servers, clients):
     timestamp = time.time()
     timestamp = datetime.fromtimestamp(timestamp)
 
-    return {'serverInfo': results, 'timestamp': timestamp}
+    return {'server_info' : results,
+            'user_info'   : user_infos,
+            'timestamp'   : timestamp}
 
 if __name__ == '__main__':
     servers = ['nescafe.cs.washington.edu', 'sanka.cs.washington.edu',
