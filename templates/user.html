@@ -25,10 +25,16 @@
     <body>
         <h1>{{ username }}</h1>
 
-        {% for info in user_info %}
-        <li>{{ info }}</li>
-        {% endfor %}
+        <table>
+            {% for info in user_info %}
+            <tr>
+                <td>{{ info[0] }}</td>
+                <td>{{ info[1] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
 
+        <br><br><br><br>
         Last updated: {{ timestamp }}
     </body>
 </html>

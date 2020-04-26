@@ -89,7 +89,7 @@ def get_user_info(username):
     results = []
     user_info = [i for i in info['user_info'] if i[2] == username]
     for server, gpu_id, _, program in user_info:
-        status = 'GPU {} on {}: {}'.format(gpu_id, server, program)
+        status = ('{} GPU {}:'.format(server, gpu_id), program)
         results.append(status)
 
     timestamp = info['timestamp']
