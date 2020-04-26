@@ -25,26 +25,10 @@
     <body>
         <h1>GRAIL Leaderboard</h1>
         <table>
-            {% for user in userCount[0] %}
+            {% for user in userCount %}
             <tr>
                 <td>{{ user[0] }}</td>
-                <td> : <red>{{ user[1] }} GPUs</red></td>
-                <td>&nbsp&nbsp({{ user[2] }} </td>
-                <td> : {{ user[3] }})</td>
-            </tr>
-            {% endfor %}
-            {% for user in userCount[1] %}
-            <tr>
-                <td>{{ user[0] }}</td>
-                <td> : <yellow>{{ user[1] }} GPUs</yellow></td>
-                <td>&nbsp&nbsp({{ user[2] }} </td>
-                <td> : {{ user[3] }})</td>
-            </tr>
-            {% endfor %}
-            {% for user in userCount[2] %}
-            <tr>
-                <td>{{ user[0] }}</td>
-                <td> : {{ user[1] }} GPUs</td>
+                <td> : {{ user[1] }}</td>
                 <td>&nbsp&nbsp({{ user[2] }} </td>
                 <td> : {{ user[3] }})</td>
             </tr>
