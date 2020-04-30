@@ -3,12 +3,22 @@ from flask import Flask, Markup, render_template
 
 app = Flask(__name__)
 
-def add_color(info):
+def add_color(info, top_user):
     # user_count[user] = [0,
     #                     '{:.2f}% utilization'.format(util),
     #                     []]
     k, n, u, v = info
+    first, second, third = top_user
     k = Markup('<a href="{}">{}</a>'.format(k, k))
+    if n == first:
+        t = Markup('&#129351;')
+    elif n == second:
+        t = Markup('&#129352;')
+    elif n == third:
+        t = Markup('&#129353;')
+    else:
+        t = Markup('')
+
     if n > 8:
         n = Markup('<red>{} GPUs</red>'.format(n))
     elif n <= 8 and n > 4:
@@ -17,13 +27,31 @@ def add_color(info):
         n = Markup('{} GPUs'.format(n))
     else:
         n = Markup('{} GPU'.format(n))
+
     if u > 80:
         u = Markup('{:.2f}% utilization'.format(u))
     elif u <= 80 and u > 40:
         u = Markup('<yellow>{:.2f}%</yellow> utilization'.format(u))
     else:
         u = Markup('<red>{:.2f}%</red> utilization'.format(u))
-    return (k, n, u, v)
+
+    return (t, k, n, u, v)
+
+
+def top3(arr):
+    third = first = second = 0
+    for i in range(len(arr)):
+        if arr[i] > first:
+            third = second
+            second = first
+            first = arr[i]
+        elif arr[i] > second and arr[i] < first:
+            third = second
+            second = arr[i]
+        elif arr[i] > third and arr[i] < second:
+            third = arr[i]
+    return (first, second, third)
+
 
 @app.route('/')
 def gpu_monitor_server():
@@ -85,7 +113,8 @@ def gpu_monitor_server():
 
     user_count = [[k, n, u, ', '.join(v)] for k, [n, u, v] in user_count.items()]
     user_count.sort(key=lambda i: i[1], reverse=True)
-    user_count = [add_color(i) for i in user_count]
+    top_user = top3([i[1] for i in user_count])
+    user_count = [add_color(i, top_user) for i in user_count]
 
     timestamp = info['timestamp']
     return render_template('files.html', userCount=user_count,
