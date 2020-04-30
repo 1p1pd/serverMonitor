@@ -36,6 +36,7 @@ def gpu_monitor_server():
     user_util = {}
     is_conflict = False
     conflicts = []
+    free_gpus = {}
     for server, status in results:
         server = server.split('.')[0]
         for s in status:
@@ -59,6 +60,17 @@ def gpu_monitor_server():
                         user_util[username] = [util]
                     if username not in users:
                         users += [username]
+            elif 'Free' in s:
+                try:
+                    free_gpus[server] += 1
+                except:
+                    free_gpus[server] = 1
+
+    free_gpus = ['{} * {}'.format(s, n) for s, n in free_gpus.items()]
+    if free_gpus == []:
+        free_gpu_result = 'None'
+    else:
+        free_gpu_result = ', '.join(free_gpus)
 
     user_server = [(k1, k2, v) for (k1, k2), v in user_server.items()]
     user_count = {}
@@ -78,6 +90,7 @@ def gpu_monitor_server():
     timestamp = info['timestamp']
     return render_template('files.html', userCount=user_count,
                                          conflicts=(is_conflict, conflicts),
+                                         freeGPU=free_gpu_result,
                                          serverInfo=results,
                                          timestamp=timestamp)
 
