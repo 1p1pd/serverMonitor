@@ -1,5 +1,6 @@
+import os
 import pickle
-from flask import Flask, Markup, render_template
+from flask import Flask, Markup, render_template, send_from_directory
 
 app = Flask(__name__)
 
@@ -138,3 +139,8 @@ def get_user_info(username):
     return render_template('user.html', username=username,
                                         user_info=results,
                                         timestamp=timestamp)
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'templates'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
