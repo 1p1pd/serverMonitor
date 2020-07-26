@@ -38,12 +38,17 @@ def get_program_by_pid(ps_output):
 
 def start_connections(server_list):
     clients = []
+    servers = []
     for server in server_list:
-        client = paramiko.SSHClient()
-        client.load_system_host_keys()
-        client.connect(server, gss_auth=True, gss_kex=True)
-        clients.append(client)
-    return clients
+        try:
+            client = paramiko.SSHClient()
+            client.load_system_host_keys()
+            client.connect(server, gss_auth=True, gss_kex=True)
+            clients.append(client)
+            servers.append(server)
+        except:
+            print('Cannot connect to ', server)
+    return clients, servers
 
 def end_connections(clients):
     for client in clients:
@@ -124,13 +129,15 @@ def gpu_monitor_server(servers, clients):
             'timestamp'   : timestamp}
 
 if __name__ == '__main__':
-    servers = ['nescafe.cs.washington.edu', 'sanka.cs.washington.edu',
-               'arabica.cs.washington.edu', 'chemex.cs.washington.edu',
-               'lungo.cs.washington.edu',   'ristretto.cs.washington.edu',
-               'latte.cs.washington.edu',   'sidamo.cs.washington.edu',
-               'caffeine.cs.washington.edu','cortado.cs.washington.edu']
-    clients = start_connections(servers)
+    servers_all = ['nescafe.cs.washington.edu', 'sanka.cs.washington.edu',
+                   'arabica.cs.washington.edu', 'chemex.cs.washington.edu',
+                   'lungo.cs.washington.edu',   'ristretto.cs.washington.edu',
+                   'latte.cs.washington.edu',   'sidamo.cs.washington.edu',
+                   'caffeine.cs.washington.edu','cortado.cs.washington.edu']
 
+    clients, servers = start_connections(servers_all)
+    connect_t = time.time()
+    is_connect = True
     while True:
         try:
             info = gpu_monitor_server(servers, clients)
@@ -138,8 +145,8 @@ if __name__ == '__main__':
                 pickle.dump(info, f)
         except Exception as e:
             print(e)
+        if time.time() - connect_t > 600:
             end_connections(clients)
-            clients = start_connections(servers)
+            clients, servers = start_connections(servers_all)
+            connect_t = time.time()
         time.sleep(20)
-
-    end_connections(clients)
