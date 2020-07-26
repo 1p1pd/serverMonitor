@@ -109,11 +109,11 @@ def get_servers_info(servers, clients):
         user_infos += details
     return server_infos, user_infos
 
-def gpu_monitor_server(servers, clients):
+def gpu_monitor_server(servers, clients, servers_all):
     server_info, user_infos = get_servers_info(servers, clients)
 
     results = []
-    for server in servers:
+    for server in servers_all:
         tmp = [server]
         try:
             tmp.append(server_info[server])
@@ -137,10 +137,9 @@ if __name__ == '__main__':
 
     clients, servers = start_connections(servers_all)
     connect_t = time.time()
-    is_connect = True
     while True:
         try:
-            info = gpu_monitor_server(servers, clients)
+            info = gpu_monitor_server(servers, clients, servers_all)
             with open('info.pkl', 'wb') as f:
                 pickle.dump(info, f)
         except Exception as e:
