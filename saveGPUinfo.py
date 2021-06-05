@@ -1,6 +1,7 @@
 import time
 import pickle
 import paramiko
+from multiprocessing.pool import ThreadPool as Pool
 from datetime import datetime
 import xml.etree.ElementTree as ET
 
@@ -43,7 +44,8 @@ def start_connections(server_list):
         try:
             client = paramiko.SSHClient()
             client.load_system_host_keys()
-            client.connect(server, gss_auth=True, gss_kex=True)
+            # client.connect(server, gss_auth=True, gss_kex=True)
+            client.connect(server)
             clients.append(client)
             servers.append(server)
         except:
@@ -96,17 +98,25 @@ def get_server_info(server, client):
         results.append('GPU {} ({}): {}'.format(gpu_info['idx'],
                                         gpu_info['model'],
                                         status))
-    return results, details
+    return server, results, details
 
 def get_servers_info(servers, clients):
     server_infos = {}
     user_infos = []
-    for i in range(len(servers)):
-        server = servers[i]
-        client = clients[i]
-        results, details = get_server_info(server, client)
-        server_infos[server] = results
-        user_infos += details
+
+    pool_results = []
+    with Pool(processes=len(servers)) as pool:
+        for server, client in zip(servers, clients):
+            r = pool.apply_async(get_server_info, (server, client))
+            pool_results.append(r)
+        for r in pool_results:
+            r.wait(10)
+            if r.ready():
+                server, results, details = r.get(1)
+                print('  => Got {}'.format(server))
+                server_infos[server] = results
+                user_infos += details
+
     return server_infos, user_infos
 
 def gpu_monitor_server(servers, clients, servers_all):
@@ -136,16 +146,21 @@ if __name__ == '__main__':
                    'caffeine.cs.washington.edu','cortado.cs.washington.edu']
 
     clients, servers = start_connections(servers_all)
+    print('=> Established connections')
     connect_t = time.time()
     while True:
         try:
+            print('=> Trying to get server info')
             info = gpu_monitor_server(servers, clients, servers_all)
+            print('=> Server info gathered')
             with open('info.pkl', 'wb') as f:
                 pickle.dump(info, f)
+            print('=> Server info saved')
         except Exception as e:
             print(e)
         if time.time() - connect_t > 600:
             end_connections(clients)
             clients, servers = start_connections(servers_all)
+            print('=> Re-established connections')
             connect_t = time.time()
         time.sleep(20)
