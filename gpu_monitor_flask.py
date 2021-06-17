@@ -56,7 +56,7 @@ def top3(arr):
 
 @app.route('/')
 def gpu_monitor_server():
-    with open('info.pkl', 'rb') as f:
+    with open('/tmp/info.pkl', 'rb') as f:
         info = pickle.load(f)
 
     results = info['server_info']
@@ -126,7 +126,7 @@ def gpu_monitor_server():
 
 @app.route('/<username>')
 def get_user_info(username):
-    with open('info.pkl', 'rb') as f:
+    with open('/tmp/info.pkl', 'rb') as f:
         info = pickle.load(f)
 
     results = []

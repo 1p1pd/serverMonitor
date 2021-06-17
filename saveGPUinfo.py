@@ -62,8 +62,12 @@ def run_cmd(client, cmd):
     return stdout
 
 def get_server_info(server, client):
-    gpu_infos = ET.fromstring(run_cmd(client, 'nvidia-smi -q -x'))
-    gpu_infos = get_gpu_infos(gpu_infos)
+    try:
+        gpu_infos = ET.fromstring(run_cmd(client, 'nvidia-smi -q -x'))
+        gpu_infos = get_gpu_infos(gpu_infos)
+    except Exception as e:
+        print('  => Server error! Cannot fetch from {} with error:\n{}'.format(server, e))
+        return server, [], []
 
     pids = [pid for gpu_info in gpu_infos for pid in gpu_info['pids']]
     if len(pids) > 0:
@@ -153,7 +157,7 @@ if __name__ == '__main__':
             print('=> Trying to get server info')
             info = gpu_monitor_server(servers, clients, servers_all)
             print('=> Server info gathered')
-            with open('info.pkl', 'wb') as f:
+            with open('/tmp/info.pkl', 'wb') as f:
                 pickle.dump(info, f)
             print('=> Server info saved')
         except Exception as e:
