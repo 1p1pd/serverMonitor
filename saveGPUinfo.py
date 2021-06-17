@@ -66,7 +66,7 @@ def get_server_info(server, client):
         gpu_infos = ET.fromstring(run_cmd(client, 'nvidia-smi -q -x'))
         gpu_infos = get_gpu_infos(gpu_infos)
     except Exception as e:
-        print('  => Server error! Cannot fetch from {} with error:\n{}'.format(server, e))
+        print('  => Server error! Cannot fetch from {} with error:\n\t\t{}'.format(server, e))
         return server, [], []
 
     pids = [pid for gpu_info in gpu_infos for pid in gpu_info['pids']]
@@ -130,7 +130,10 @@ def gpu_monitor_server(servers, clients, servers_all):
     for server in servers_all:
         tmp = [server]
         try:
-            tmp.append(server_info[server])
+            if server_info[server]:
+                tmp.append(server_info[server])
+            else:
+                tmp.append(["This server is down! Keep calm and email Stephen."])
         except:
             tmp.append(["This server is down! Keep calm and email Stephen."])
         results.append(tmp)
